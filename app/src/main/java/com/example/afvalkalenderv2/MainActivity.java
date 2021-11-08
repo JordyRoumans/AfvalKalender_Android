@@ -19,11 +19,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
     Button btn;
-    String summary;
+    String summary,summaryTomorrow;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -32,16 +36,14 @@ public class MainActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //DateTimeFormatter dtf = DateTimeFormatter.BASIC_ISO_DATE;
-        //datum = dtf.format(LocalDate.now());
-
-        //get current date and tommorow
-        int year,month,day;
-        year = LocalDate.now().getYear();
-        month = LocalDate.now().getMonthValue();
-        day = LocalDate.now().getDayOfMonth();
-        String currentDate = Integer.toString(year)+Integer.toString(month)+Integer.toString(day);
-        String tomorrow = Integer.toString(year)+Integer.toString(month)+Integer.toString(day+1);
+        //get current date
+        DateTimeFormatter dtf = DateTimeFormatter.BASIC_ISO_DATE;
+        //format the date
+        String datum = dtf.format(LocalDate.now());
+        //get tomorrow date
+        Date dt = new Date();
+        //format the date
+        String tomorrow = dtf.format(LocalDateTime.from(dt.toInstant().atZone(ZoneId.of("UTC"))).plusDays(1));
 
 
         //check build version
@@ -51,8 +53,6 @@ public class MainActivity extends AppCompatActivity {
             NotificationChannel channel = new NotificationChannel("My notifications","My notifications", NotificationManager.IMPORTANCE_HIGH);
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
-            //format the date
-
         }
         //bind button and textview
         btn = (Button) findViewById(R.id.button_1);
@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //event listener
+        Date finalDt = dt;
         btn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view)
@@ -68,16 +69,17 @@ public class MainActivity extends AppCompatActivity {
 
                 try
                 {
-                   summary = ParseDates(tomorrow);
+                    summary = ParseDates(datum);
+                    summaryTomorrow = ParseDates(tomorrow);
                 } catch (IOException e)
                 {
                     e.printStackTrace();
                 }
-                txtSummary.setText(summary);
+                txtSummary.setText(summaryTomorrow);
 
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this,"My notifications");
                 builder.setContentTitle("Afval kalender");
-                builder.setContentText(summary);
+                builder.setContentText(summaryTomorrow);
                 builder.setSmallIcon(android.R.drawable.ic_dialog_alert);
                 builder.setAutoCancel(true);
 
