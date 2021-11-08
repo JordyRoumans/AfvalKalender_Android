@@ -56,12 +56,12 @@ public class MainActivity extends AppCompatActivity {
         }
         //bind button and textview
         btn = (Button) findViewById(R.id.button_1);
-        TextView txtSummary = (TextView) findViewById(R.id.textViewSummary);
+        TextView txtSummaryToday = (TextView) findViewById(R.id.textViewSummaryToday);
+        TextView txtSummaryTomorrow = (TextView) findViewById(R.id.textViewSummaryTomorrow);
 
 
 
         //event listener
-        Date finalDt = dt;
         btn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view)
@@ -75,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
                 {
                     e.printStackTrace();
                 }
-                txtSummary.setText(summaryTomorrow);
+                txtSummaryToday.setText(summary);
+                txtSummaryTomorrow.setText(summaryTomorrow);
 
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this,"My notifications");
                 builder.setContentTitle("Afval kalender");
