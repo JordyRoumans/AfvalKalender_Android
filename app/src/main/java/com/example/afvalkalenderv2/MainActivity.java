@@ -73,8 +73,8 @@ public class MainActivity extends AppCompatActivity {
                 Calendar calender = Calendar.getInstance();
                 //set time for repeating notification
                 calender.set(Calendar.HOUR_OF_DAY,10);
-                calender.set(Calendar.MINUTE,14);
-                calender.set(Calendar.SECOND,40);
+                calender.set(Calendar.MINUTE,39);
+                calender.set(Calendar.SECOND,1);
 
                 Intent intent = new Intent(getApplicationContext(),Notification_receiver.class);
                 intent.setAction("MY_NOTIFICATION_MESSAGE");
@@ -90,14 +90,18 @@ public class MainActivity extends AppCompatActivity {
                 {
                     summaryToday = ParseDates(datum);
                     summaryTomorrow = ParseDates(tomorrow);
+                    //pass the summary to the notification
+                    intent.putExtra("Summary",summaryTomorrow);
+
                 } catch (IOException e)
                 {
                     e.printStackTrace();
                 }
                 txtSummaryToday.setText(summaryToday);
                 txtSummaryTomorrow.setText(summaryTomorrow);
-                //pass the summary to the notification
-                intent.putExtra("Summary",summaryTomorrow);
+
+
+
 
                 }
 
