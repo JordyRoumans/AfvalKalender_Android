@@ -5,8 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -27,7 +30,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 
     Button btn;
-    String summary,summaryTomorrow;
+    String summaryToday,summaryTomorrow;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -67,25 +70,34 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view)
             {
 
+                Calendar calender = Calendar.getInstance();
+                //set time for repeating notification
+                calender.set(Calendar.HOUR_OF_DAY,10);
+                calender.set(Calendar.MINUTE,14);
+                calender.set(Calendar.SECOND,40);
+
+                Intent intent = new Intent(getApplicationContext(),Notification_receiver.class);
+                intent.setAction("MY_NOTIFICATION_MESSAGE");
+
+
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),100,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+
+                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calender.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
+
+
                 try
                 {
-                    summary = ParseDates(datum);
+                    summaryToday = ParseDates(datum);
                     summaryTomorrow = ParseDates(tomorrow);
                 } catch (IOException e)
                 {
                     e.printStackTrace();
                 }
-                txtSummaryToday.setText(summary);
+                txtSummaryToday.setText(summaryToday);
                 txtSummaryTomorrow.setText(summaryTomorrow);
-
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this,"My notifications");
-                builder.setContentTitle("Afval kalender");
-                builder.setContentText(summaryTomorrow);
-                builder.setSmallIcon(android.R.drawable.ic_dialog_alert);
-                builder.setAutoCancel(true);
-
-                NotificationManagerCompat managerCompat = NotificationManagerCompat.from(MainActivity.this);
-                managerCompat.notify(1,builder.build());
+                //pass the summary to the notification
+                intent.putExtra("Summary",summaryTomorrow);
 
                 }
 
