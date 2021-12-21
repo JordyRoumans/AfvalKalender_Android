@@ -17,17 +17,15 @@ public class Notification_receiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent)
     {
 
+
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent repeating_intent = new Intent(context,Repeating_activity.class);
         //if needed replace previous activity
         repeating_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        String summary1 = intent.getExtras().getString("Summary");
-
+        String summary1 = intent.getStringExtra("Summary");
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context,100,repeating_intent,PendingIntent.FLAG_UPDATE_CURRENT);
-
-
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "My notifications");
         builder.setContentIntent(pendingIntent);
@@ -37,7 +35,9 @@ public class Notification_receiver extends BroadcastReceiver {
         builder.setPriority(NotificationManager.IMPORTANCE_HIGH);
         builder.setAutoCancel(true);
 
-        if (intent.getAction().equals("MY_NOTIFICATION_MESSAGE")) {
+
+        if (intent.getAction().equals("MY_NOTIFICATION_MESSAGE"))
+        {
             notificationManager.notify(100, builder.build());
 
         }
