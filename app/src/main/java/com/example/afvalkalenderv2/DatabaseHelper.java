@@ -2,13 +2,20 @@ package com.example.afvalkalenderv2;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class DatabaseHelper extends SQLiteOpenHelper
 {
+    private String date;
+
     public DatabaseHelper(@Nullable Context context) {
         super(context, "calendar.db",null,1);
     }
@@ -28,6 +35,32 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
+
+    }
+
+    public List SelectFromDate(String date)
+    {
+        String query = "SELECT summary FROM Dates_Table WHERE dtend = ?";
+        String data = null;
+        List summary = new ArrayList();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(query,new String[] {date});
+
+        if (c.moveToFirst())
+        {
+            do {
+                data = c.getString(0);
+                summary.add(data);
+
+            } while (c.moveToNext());
+
+        }
+        else {
+            summary = Collections.singletonList("geen afval ophaal verwacht");
+        }
+        c.close();
+        return summary;
 
     }
 

@@ -30,11 +30,12 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     Button btn;
-    String summaryToday,summaryTomorrow;
+    List summaryToday,summaryTomorrow;
     int hours,minutes;
 
 
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         Date dt = new Date();
         //format the date
         String tomorrow = dtf.format(LocalDateTime.from(dt.toInstant().atZone(ZoneId.of("UTC"))).plusDays(1));
+        String dayAfterTomorrow = dtf.format(LocalDateTime.from(dt.toInstant().atZone(ZoneId.of("UTC"))).plusDays(2));
 
 
         //check build version
@@ -66,8 +68,7 @@ public class MainActivity extends AppCompatActivity {
         btn = (Button) findViewById(R.id.button_1);
         TextView txtSummaryToday = (TextView) findViewById(R.id.textViewSummaryToday);
         TextView txtSummaryTomorrow = (TextView) findViewById(R.id.textViewSummaryTomorrow);
-        //EditText timeUserHours = (EditText) findViewById(R.id.editTextHours) ;
-        //EditText timeUserMinutes = (EditText) findViewById(R.id.editTextMinutes) ;
+
 
 
 
@@ -78,21 +79,18 @@ public class MainActivity extends AppCompatActivity {
             {
 
                 DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
-                boolean succes = databaseHelper.AddDate();
-                Toast.makeText(MainActivity.this, "Succes: " + succes, Toast.LENGTH_SHORT).show();
-
-
-                //hours = Integer.parseInt(String.valueOf(timeUserHours));
-                //minutes = Integer.parseInt(String.valueOf(timeUserMinutes));
+                summaryToday = databaseHelper.SelectFromDate(tomorrow);
+                summaryTomorrow = databaseHelper.SelectFromDate(dayAfterTomorrow);
 
                 Calendar calender = Calendar.getInstance();
                 //set time for repeating notification
-                calender.set(Calendar.HOUR_OF_DAY,hours);
-                calender.set(Calendar.MINUTE,10);
+                calender.set(Calendar.HOUR_OF_DAY,20);
+                calender.set(Calendar.MINUTE,45);
                 calender.set(Calendar.SECOND,1);
 
                 Intent intent = new Intent(getApplicationContext(),Notification_receiver.class);
                 intent.setAction("MY_NOTIFICATION_MESSAGE");
+                intent.putExtra("Summary",summaryTomorrow.toString().replaceAll("\\[", "").replaceAll("\\]",""));
 
 
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),100,intent,PendingIntent.FLAG_UPDATE_CURRENT);
@@ -100,24 +98,9 @@ public class MainActivity extends AppCompatActivity {
                 AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
                 alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calender.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
 
-
-                try
-                {
-                    summaryToday = ParseDates(datum);
-                    summaryTomorrow = ParseDates(tomorrow);
-                    //pass the summary to the notification
-                    intent.putExtra("Summary",summaryTomorrow);
-
-
-                } catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-                txtSummaryToday.setText(summaryToday);
-                txtSummaryTomorrow.setText(summaryTomorrow);
-
-
-
+                txtSummaryToday.setText(summaryToday.toString().replaceAll("\\[", "").replaceAll("\\]",""));
+                txtSummaryTomorrow.setText(summaryTomorrow.toString().replaceAll("\\[", "").replaceAll("\\]",""));
+                databaseHelper.close();
 
                 }
 
