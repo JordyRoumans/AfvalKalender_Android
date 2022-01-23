@@ -30,7 +30,7 @@ public class Notification_receiver extends BroadcastReceiver {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "My notifications");
         builder.setContentIntent(pendingIntent);
         builder.setSmallIcon(android.R.drawable.ic_dialog_alert);
-        builder.setContentTitle("Afval kalender");
+        builder.setContentTitle("Afval kalender morgen:");
         builder.setContentText(summary1);
         builder.setPriority(NotificationManager.IMPORTANCE_HIGH);
         builder.setAutoCancel(true);

@@ -32,11 +32,21 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity {
 
     Button btn;
     List summaryToday,summaryTomorrow;
     int hours,minutes;
+    //get current date
+    DateTimeFormatter dtf = DateTimeFormatter.BASIC_ISO_DATE;
+    //format the date
+    String datum = dtf.format(LocalDate.now());
+    //get tomorrow date
+    Date dt = new Date();
+    //format the date
+    String tomorrow = dtf.format(LocalDateTime.from(dt.toInstant().atZone(ZoneId.of("UTC"))).plusDays(1));
+    String dayAfterTomorrow = dtf.format(LocalDateTime.from(dt.toInstant().atZone(ZoneId.of("UTC"))).plusDays(2));
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -45,15 +55,7 @@ public class MainActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //get current date
-        DateTimeFormatter dtf = DateTimeFormatter.BASIC_ISO_DATE;
-        //format the date
-        String datum = dtf.format(LocalDate.now());
-        //get tomorrow date
-        Date dt = new Date();
-        //format the date
-        String tomorrow = dtf.format(LocalDateTime.from(dt.toInstant().atZone(ZoneId.of("UTC"))).plusDays(1));
-        String dayAfterTomorrow = dtf.format(LocalDateTime.from(dt.toInstant().atZone(ZoneId.of("UTC"))).plusDays(2));
+
 
 
         //check build version
@@ -66,8 +68,7 @@ public class MainActivity extends AppCompatActivity {
         }
         //bind button and textview
         btn = (Button) findViewById(R.id.button_1);
-        TextView txtSummaryToday = (TextView) findViewById(R.id.textViewSummaryToday);
-        TextView txtSummaryTomorrow = (TextView) findViewById(R.id.textViewSummaryTomorrow);
+
 
 
 
@@ -78,34 +79,52 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view)
             {
 
-                DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
-                summaryToday = databaseHelper.SelectFromDate(tomorrow);
-                summaryTomorrow = databaseHelper.SelectFromDate(dayAfterTomorrow);
-
-                Calendar calender = Calendar.getInstance();
-                //set time for repeating notification
-                calender.set(Calendar.HOUR_OF_DAY,20);
-                calender.set(Calendar.MINUTE,45);
-                calender.set(Calendar.SECOND,1);
-
-                Intent intent = new Intent(getApplicationContext(),Notification_receiver.class);
-                intent.setAction("MY_NOTIFICATION_MESSAGE");
-                intent.putExtra("Summary",summaryTomorrow.toString().replaceAll("\\[", "").replaceAll("\\]",""));
 
 
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),100,intent,PendingIntent.FLAG_UPDATE_CURRENT);
 
-                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calender.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
 
-                txtSummaryToday.setText(summaryToday.toString().replaceAll("\\[", "").replaceAll("\\]",""));
-                txtSummaryTomorrow.setText(summaryTomorrow.toString().replaceAll("\\[", "").replaceAll("\\]",""));
-                databaseHelper.close();
+
+
 
                 }
 
 
         });
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        TextView txtSummaryToday = (TextView) findViewById(R.id.textViewSummaryToday);
+        TextView txtSummaryTomorrow = (TextView) findViewById(R.id.textViewSummaryTomorrow);
+
+        DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
+        summaryToday = databaseHelper.SelectFromDate(tomorrow);
+        summaryTomorrow = databaseHelper.SelectFromDate(dayAfterTomorrow);
+        databaseHelper.close();
+        txtSummaryToday.setText(summaryToday.toString().replaceAll("\\[", "").replaceAll("\\]",""));
+        txtSummaryTomorrow.setText(summaryTomorrow.toString().replaceAll("\\[", "").replaceAll("\\]",""));
+
+        Calendar calender = Calendar.getInstance();
+        //set time for repeating notification
+        calender.set(Calendar.HOUR_OF_DAY,21);
+        calender.set(Calendar.MINUTE,45);
+        calender.set(Calendar.SECOND,1);
+
+        Intent intent = new Intent(getApplicationContext(),Notification_receiver.class);
+        intent.setAction("MY_NOTIFICATION_MESSAGE");
+        intent.putExtra("Summary",summaryTomorrow.toString().replaceAll("\\[", "").replaceAll("\\]",""));
+
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),100,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calender.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
+    }
+
+    public void Main()
+    {
 
     }
 
