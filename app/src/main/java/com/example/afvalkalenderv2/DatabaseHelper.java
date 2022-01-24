@@ -33,11 +33,6 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-
-    }
-
     public List SelectFromDate(String date)
     {
         String query = "SELECT summary FROM Dates_Table WHERE dtend = ?";
@@ -61,6 +56,11 @@ public class DatabaseHelper extends SQLiteOpenHelper
         }
         c.close();
         return summary;
+
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
 
     }
 

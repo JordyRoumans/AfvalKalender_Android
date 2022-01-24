@@ -43,7 +43,6 @@ import java.util.List;
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity {
 
-
     List summaryToday,summaryTomorrow;
     int hours,minutes;
     //get datetimeformatter
@@ -63,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -75,9 +73,6 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
-
-
-
 
     }
 
